@@ -77,7 +77,7 @@ y = sin(0.5*x);
 Y = [x;y];
 Z = Y + 0.1*randn(size(Y));
 
-% Plot input motion
+% Plot input motion (Task 2)
 figure(1);
 plot(Y(1,:), Y(2,:));
 xlabel('x');
@@ -90,8 +90,43 @@ xlabel('x');
 ylabel('y');
 title('Measured position');
 
+% Task 3
+
+% see student sols
+
+% Task 4
 % Set up A, C, Q, R, x0, P0 here
+T = 0.01; % [2]
+A = [1, T, 0, 0
+    0, 1, 0, 0;
+    0, 0, 1, T;
+    0, 0, 0, 1];
+C = [1, 0, 0, 0;
+    0, 0, 0, 0];
+
+% Sin function is very exact model --> low Q
+Q = diag([0, 1, 0, 1]);
+% Measured deviates with 0.1 --> R = variance
+R = [10^-3, 0;
+    0, 10^-3]
+
+x0 = zeros(4,1);
+
+P0 = eye(4)*10^6;
+
 
 % Call your fancy kalman filter using the syntax
-% [Xfilt, Pp] = funs.kalm_filt(Z,A,C,Q,R,x0,P0);
+[Xfilt, Pp] = funs.kalm_filt(Z,A,C,Q,R,x0,P0);
+
+
+figure(3)
+scatter(Z(1,:), Z(2,:));
+hold on
+plot(Y(1,:), Y(2,:));
+plot(Xfilt(1,:),Xfilt(3,:),'x')
+legend('meassuered position', 'true position', 'kalman estimate')
+
+
+
+
 
