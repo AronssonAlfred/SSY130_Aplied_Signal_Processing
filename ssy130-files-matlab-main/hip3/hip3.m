@@ -62,6 +62,7 @@
 
 % Do some cleanup
 clc
+close all
 clear variables
 format short eng
 
@@ -102,13 +103,14 @@ A = [1, T, 0, 0
     0, 0, 1, T;
     0, 0, 0, 1];
 C = [1, 0, 0, 0;
-    0, 0, 0, 0];
+    0, 0, 1, 0];
 
 % Sin function is very exact model --> low Q
 Q = diag([0, 1, 0, 1]);
 % Measured deviates with 0.1 --> R = variance
-R = [10^-3, 0;
-    0, 10^-3]
+scale = 10^3;
+R = scale*[var(Z(1,:)), 0;
+    0, var(Z(2,:))];
 
 x0 = zeros(4,1);
 
@@ -119,14 +121,28 @@ P0 = eye(4)*10^6;
 [Xfilt, Pp] = funs.kalm_filt(Z,A,C,Q,R,x0,P0);
 
 
+
+
 figure(3)
 scatter(Z(1,:), Z(2,:));
 hold on
-plot(Y(1,:), Y(2,:));
-plot(Xfilt(1,:),Xfilt(3,:),'x')
+plot(Y(1,:), Y(2,:),  'LineWidth',2);
+plot(Xfilt(1,:),Xfilt(3,:), 'LineWidth',2)
+title('Kalman Filter Estimate of Position');
 legend('meassuered position', 'true position', 'kalman estimate')
 
+% Plotting the original Kalman filter estimate
+figure(4)
+subplot(2,1,1); % Divide the figure into 2 subplots and select the first one
+plot(1:length(Xfilt(2,:)), Xfilt(2,:),'LineWidth',2);
+title('Kalman Filter Estimate of x-Velocity');
+xlabel('Time [ms]');
+ylabel('Velocity');
 
 
-
+subplot(2,1,2); % Select the second subplot
+plot(1:length(Xfilt(4,:)), Xfilt(4,:),'LineWidth',2);
+title('Kalman Filter Estimate of y-Velocity');
+xlabel('Time [ms]');
+ylabel('Velocity');
 
